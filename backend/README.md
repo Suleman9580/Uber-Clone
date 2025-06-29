@@ -70,20 +70,89 @@ Send a JSON object with the following structure:
 
 ---
 
-### **Example Request (using curl)**
 
-```bash
-curl -X POST http://localhost:4000/users/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "fullname": { "firstname": "Jane", "lastname": "Smith" },
-    "email": "jane.smith@example.com",
-    "password": "securepassword"
-  }'
+### **Notes**
+- All required fields must be present and valid.
+- On success, a JWT token is returned for authentication.
+
+---
+
+# User Login Endpoint Documentation
+
+## POST `/users/login`
+
+Authenticates a user and returns a JWT token.
+
+---
+
+### **Request Body**
+
+Send a JSON object with the following structure:
+
+```json
+{
+  "email": "john.doe@example.com",
+  "password": "yourpassword"
+}
 ```
+
+#### **Field Requirements**
+- `email` (string, required): Must be a valid email format.
+- `password` (string, required): Minimum 6 characters.
+
+---
+
+### **Responses**
+
+#### **200 OK**
+- **Description:** User authenticated successfully.
+- **Body:**
+  ```json
+  {
+    "token": "<jwt_token>",
+    "user": {
+      "_id": "<user_id>",
+      "fullname": {
+        "firstname": "John",
+        "lastname": "Doe"
+      },
+      "email": "john.doe@example.com"
+      // other user fields
+    }
+  }
+  ```
+
+#### **400 Bad Request**
+- **Description:** Validation failed.
+- **Body:**
+  ```json
+  {
+    "errors": [
+      {
+        "msg": "Invalid email format",
+        "param": "email",
+        "location": "body"
+      }
+      // ...other errors
+    ]
+  }
+  ```
+
+#### **401 Unauthorized**
+- **Description:** Invalid email or password.
+- **Body:**
+  ```json
+  {
+    "message": "Invalid email or password"
+  }
+  ```
+
+#### **500 Internal Server Error**
+- **Description:** Server error.
+
 
 ---
 
 ### **Notes**
-- All required fields must be present and valid.
+- Both fields are required and must be valid.
 - On success, a JWT token is returned for authentication.
