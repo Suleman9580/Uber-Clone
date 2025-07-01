@@ -156,3 +156,174 @@ Send a JSON object with the following structure:
 ### **Notes**
 - Both fields are required and must be valid.
 - On success, a JWT token is returned for authentication.
+
+---
+
+# User Profile Endpoint Documentation
+
+## GET `/users/profile`
+
+Returns the authenticated user's profile information.
+
+---
+
+### **Headers**
+
+- `Authorization: Bearer <jwt_token>`  
+  or  
+- Cookie: `token=<jwt_token>`
+
+---
+
+### **Responses**
+
+#### **200 OK**
+- **Description:** Returns the user's profile.
+- **Body:**
+  ```json
+  {
+    "_id": "<user_id>",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.doe@example.com"
+    // other user fields
+  }
+  ```
+
+#### **401 Unauthorized**
+- **Description:** Missing or invalid token.
+- **Body:**
+  ```json
+  {
+    "message": "Unauthorized"
+  }
+  ```
+
+---
+
+### **Notes**
+- Requires authentication (JWT token in header or cookie).
+- Returns the current user's data.
+
+---
+
+# User Logout Endpoint Documentation
+
+## GET `/users/logout`
+
+Logs out the authenticated user by blacklisting the JWT token and clearing the cookie.
+
+---
+
+### **Headers**
+
+- `Authorization: Bearer <jwt_token>`  
+  or  
+- Cookie: `token=<jwt_token>`
+
+---
+
+### **Notes**
+- Requires authentication (JWT token in header or cookie).
+- The token is blacklisted and cannot be used again.
+- The authentication cookie is cleared on logout.
+
+---
+
+# Captain Registration Endpoint Documentation
+
+## POST `/captains/register`
+
+Registers a new captain (driver) in the system.
+
+---
+
+### **Request Body**
+
+Send a JSON object with the following structure:
+
+```json
+{
+  "firstname": "Ali",
+  "lastname": "Khan",
+  "email": "ali.khan@example.com",
+  "password": "yourpassword",
+  "color": "Black",
+  "plate": "ABC-1234",
+  "capacity": 4,
+  "vehicleType": "car"
+}
+```
+
+#### **Field Requirements**
+- `firstname` (string, required): Minimum 3 characters.
+- `lastname` (string, required): Minimum 3 characters.
+- `email` (string, required): Must be a valid email format.
+- `password` (string, required): Minimum 6 characters.
+- `color` (string, required): Minimum 3 characters.
+- `plate` (string, required): Unique vehicle plate.
+- `capacity` (integer, required): Minimum 1.
+- `vehicleType` (string, required): One of `car`, `bike`, `auto`.
+
+---
+
+### **Responses**
+
+#### **201 Created**
+- **Description:** Captain registered successfully.
+- **Body:**
+  ```json
+  {
+    "token": "<jwt_token>",
+    "captain": {
+      "_id": "<captain_id>",
+      "fullname": {
+        "firstname": "Ali",
+        "lastname": "Khan"
+      },
+      "email": "ali.khan@example.com",
+      "vehicle": {
+        "color": "Black",
+        "plate": "ABC-1234",
+        "capacity": 4,
+        "vehicleType": "car"
+      }
+      // other captain fields
+    }
+  }
+  ```
+
+#### **400 Bad Request**
+- **Description:** Validation failed or captain already exists.
+- **Body:**
+  ```json
+  {
+    "errors": [
+      {
+        "msg": "First name must be at least 3 characters long",
+        "param": "firstname",
+        "location": "body"
+      }
+      // ...other errors
+    ]
+  }
+  ```
+  or
+  ```json
+  {
+    "error": "Captain already exists"
+  }
+  ```
+
+#### **500 Internal Server Error**
+- **Description:** Server error or missing required fields.
+
+---
+
+### **Notes**
+- All required fields must be present and valid.
+- On success, a JWT token is returned for authentication.
+- Vehicle information is required and must be valid.
+
