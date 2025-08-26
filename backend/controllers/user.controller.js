@@ -8,6 +8,7 @@ const { validationResult } = require('express-validator');
 module.exports.registerUser = async (req, res, next) => {
     const errors  = validationResult(req);
     if (!errors.isEmpty()) {
+        console.log("lastname error")
         return res.status(400).json({ errors: errors.array() });
     }
 
@@ -18,7 +19,7 @@ module.exports.registerUser = async (req, res, next) => {
         return res.status(400).json({ error: "User already exists" });
     }
 
-    const hashedPassword = await userModel.hashPassword(password);
+    const hashedPassword = await UserModel.hashPassword(password);
 
     const user = await userService.createUser({
         firstname: fullname.firstname,

@@ -1,22 +1,37 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import axios from 'axios'
+import React, { useContext, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { CaptainDataContext } from '../context/CaptainContext'
+
 
 
 
 function CaptainLogin() {
     const [email, setemail] = useState('')
     const [password, setpassword] = useState('')
-    const [captainData, setcaptainData] = useState({})
+
+    const {captain, setcaptain} = useContext(CaptainDataContext)
+
+    const navigate = useNavigate()
      
-    const submitHandler = (e) => {
+    const submitHandler = async (e) => {
       e.preventDefault()
-      setcaptainData({
+      const captain = {
         email: email,
-        password: password
-      })
+        password
+      }
+
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captains/login`, captain)
+
+      if(response.status === 200) {
+        const data = response.data
+        setcaptain(data.captain)
+        localStorage.setItem('token', data.token)
+        navigate('/captain/home')
+      }
       // console.log(captainData)
       setemail('')
-      setpassword('')
+      setpassword('') 
     }
     
   
@@ -52,7 +67,7 @@ function CaptainLogin() {
           <button className='text-zinc-400 text-center text-xl font-medium py-2 rounded-lg w-full bg-zinc-800 mt-6'> login</button>
           </form>
   
-          <p className='text-zinc-400 text-right mt-4 font-medium'>New here? <Link to='/captain-signup' className='text-blue-800'>Create new account</Link></p>
+          <p className='text-zinc-400 text-right mt-4 font-medium'>New here? <Link to='/captain/signup' className='text-blue-800'>Create new account</Link></p>
   
         </div>
         <Link to='/user-login' className='inline-block text-zinc-400 text-center text-xl font-medium py-2 rounded-lg w-full bg-zinc-800'> Login as user </Link>

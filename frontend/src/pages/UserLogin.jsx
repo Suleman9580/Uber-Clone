@@ -1,5 +1,7 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useContext, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { UserDataContext } from '../context/UserContext'
+import axios from 'axios'
 
 
 
@@ -7,14 +9,29 @@ function UserLogin() {
 
   const [email, setemail] = useState('')
   const [password, setpassword] = useState('')
-  const [userData, setuserData] = useState({})
+  const [userData, setUserData] = useState({})
 
-  const submitHandler = (e) => {
+  const navigate = useNavigate()
+  const {user, setUser} = useContext(UserDataContext)
+
+  const submitHandler = async (e) => {
     e.preventDefault()
-    setuserData({
+    const userData = {
       email: email,
       password: password
-    })
+    }
+
+    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login`, userData,
+
+    )
+
+    if(response.status === 200) {
+      const data = response.data
+      setUser(data.user)
+      localStorage.setItem('token', data.token)
+      navigate('/home')
+    }
+
     // console.log(userData)
     setemail('')
     setpassword('')
@@ -53,10 +70,10 @@ function UserLogin() {
         <button className='text-zinc-400 text-center text-xl font-medium py-2 rounded-lg w-full bg-zinc-800 mt-6'> login</button>
         </form>
 
-        <p className='text-zinc-400 text-right mt-4 font-medium'>New here? <Link to='/user-signup' className='text-blue-800'>Create new account</Link></p>
+        <p className='text-zinc-400 text-right mt-4 font-medium'>New here? <Link to='/user/signup' className='text-blue-800'>Create new account</Link></p>
 
       </div>
-      <Link to='/captain-login' className='inline-block text-zinc-400 text-center text-xl font-medium py-2 rounded-lg w-full bg-zinc-800'> Login as captain </Link>
+      <Link to='/captain/login' className='inline-block text-zinc-400 text-center text-xl font-medium py-2 rounded-lg w-full bg-zinc-800'> Login as captain </Link>
     </div>
   )
 }
